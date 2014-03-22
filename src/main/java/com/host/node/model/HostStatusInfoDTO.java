@@ -1,12 +1,21 @@
 package com.host.node.model;
 
-public class HostStatusInfo {
+public class HostStatusInfoDTO {
+
 	private Long id;
 	private String hostname;
 	private int cpuCount;
 	private double cpuTotalUsed;
 	private double totalMem;
 	private double freeMem;
+	
+	private String commandStr;
+	public String getCommandStr() {
+		return commandStr;
+	}
+	public void setCommandStr(String commandStr) {
+		this.commandStr = commandStr;
+	}
 	
 	public Long getId() {
 		return id;
@@ -44,4 +53,5 @@ public class HostStatusInfo {
 	public void setFreeMem(double freeMem) {
 		this.freeMem = freeMem;
 	}	
+	
 }

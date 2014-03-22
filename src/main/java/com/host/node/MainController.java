@@ -16,7 +16,7 @@ import org.hyperic.sigar.CpuPerc;
 import org.hyperic.sigar.Mem;
 import org.hyperic.sigar.Sigar;
 
-import com.host.node.model.HostStatusInfo;
+import com.host.node.model.HostStatusInfoDTO;
 
 public class MainController {
 	
@@ -27,7 +27,7 @@ public class MainController {
 			System.out.println("------------------------------------------");
 			
 			Sigar sigar = new Sigar();
-			HostStatusInfo status = new HostStatusInfo();
+			HostStatusInfoDTO status = new HostStatusInfoDTO();
 			status.setId(1l);
 
 			  try { 
@@ -81,6 +81,10 @@ public class MainController {
 				
 				HttpResponse response = client2.execute(httpPost);
 				String json = EntityUtils.toString(response.getEntity(), "utf-8");
+				
+//				JSONObject obj = new JSONObject(json);
+//				
+//				JSONObject.toBean(jsonObject, beanClass);
 				
 				System.out.println("JSON: " + json);
 			} catch (Exception e) {
