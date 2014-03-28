@@ -9,6 +9,8 @@ public class HostStatusInfoDTO {
 	private double totalMem;
 	private double freeMem;
 	
+	private String macAddress;
+	
 	private String commandStr;
 	public String getCommandStr() {
 		return commandStr;
@@ -52,6 +54,12 @@ public class HostStatusInfoDTO {
 	}
 	public void setFreeMem(double freeMem) {
 		this.freeMem = freeMem;
+	}
+	public String getMacAddress() {
+		return macAddress;
+	}
+	public void setMacAddress(String macAddress) {
+		this.macAddress = macAddress;
 	}	
 	
 }
