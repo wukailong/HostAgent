@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
+import java.util.Date;
 
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -58,6 +59,7 @@ public class ProcessCommandThread extends Thread {
 		}
 		
 		command.setResultStr(resultBuffer.toString());
+		command.setEndDate(new Date());
 		if (isSucess) {
 			command.setStatus("Sucess");
 		} else {
