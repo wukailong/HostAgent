@@ -1,11 +1,13 @@
 package com.host.node;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Timer;
 
-import net.sf.json.JSONObject;
-
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.hyperic.sigar.CpuPerc;
 import org.hyperic.sigar.Mem;
 import org.hyperic.sigar.NetInterfaceConfig;
@@ -13,18 +15,23 @@ import org.hyperic.sigar.Sigar;
 
 import com.host.node.model.HostStatusInfoDTO;
 import com.host.node.model.UserCommandDTO;
+import com.host.node.request.MainGetRequest;
 import com.host.node.request.MainPostRequest;
 
 public class MainController {
 	
 	public static String serverUrl = "http://127.0.0.1:8090/MonitorServer-1.0/";
 	public static String macAddress = "";
+	public static ObjectMapper objectMapper = new ObjectMapper();
 	
 	static {
 		try {
 			Sigar sigar = new Sigar();
 			NetInterfaceConfig nic = sigar.getNetInterfaceConfig();	// get Default Mac Address
-			macAddress = nic.getHwaddr();			  
+			macAddress = nic.getHwaddr();		
+			
+			System.out.println("macAddress: " + macAddress);
+			
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			e.printStackTrace();
@@ -35,13 +42,16 @@ public class MainController {
 		
 		@Override
 		public void run() {
+			System.out.println("FileEncoding: " + System.getProperty("file.encoding")); 
+			System.out.println("SunJnuEncoding: " + System.getProperty("sun.jnu.encoding"));
+//			System.getProperties().list(System.out);
+			
 			System.out.println("------------------------------------------");
 			
 			
 			
 			Sigar sigar = new Sigar();
 			HostStatusInfoDTO status = new HostStatusInfoDTO();
-			status.setId(1l);
 			
 //			UserCommandDTO dto = new UserCommandDTO();
 //			dto.setId(1l);			
@@ -92,7 +102,19 @@ public class MainController {
 			  // 1. Save New Status
 			  MainPostRequest request = new MainPostRequest();
 			  request.setUrl("services/hostInfo/hostStatusInfoService/create");
-			  request.setPostDataJsonStr(JSONObject.fromObject(status).toString());
+			  
+			  ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			  try {
+				objectMapper.writeValue(bos, status);
+			  } catch (Exception e) {
+					e.printStackTrace();
+			  }
+			  String statusJson = bos.toString();
+			  
+			  System.out.println("SendJson: " + statusJson);
+			  
+			  request.setPostDataJsonStr(statusJson);
+//			  request.setPostDataJsonStr(fromObject(status).toString());
 			  String resultDataJsonStr = request.execute();
 			  
 			  System.out.println("JSON: " + resultDataJsonStr);
@@ -157,7 +179,7 @@ public class MainController {
 
 	public static void main(String[] args) {
 		
-		// 1. Refresh Host Status
+		// 1. Refresh Host Status		
 		Timer timer = new Timer();
 		timer.schedule(new RefreshHostInfoTask(), 1000, 5000);//在1秒后执行此任务,每次间隔5秒,如果传递一个Data参数,就可以在某个固定的时间执行这个任务.
 		
@@ -177,5 +199,7 @@ public class MainController {
 			}
 		}	
 	}
+	
+	
 
 }
