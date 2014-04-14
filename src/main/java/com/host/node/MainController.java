@@ -1,8 +1,12 @@
 package com.host.node;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.Iterator;
+import java.util.Properties;
+import java.util.Set;
 import java.util.Timer;
 
 import org.codehaus.jackson.JsonGenerationException;
@@ -31,6 +35,26 @@ public class MainController {
 			macAddress = nic.getHwaddr();		
 			
 			System.out.println("macAddress: " + macAddress);
+			
+			Properties p = new Properties();
+			FileInputStream ferr = new FileInputStream("properties.properties");// 用subString(6)去掉：file:/
+			try{
+				p.load(ferr);
+				ferr.close();
+				Set s = p.keySet();
+				Iterator it = s.iterator();
+				while(it.hasNext()){
+					String id = (String)it.next();
+					String value = p.getProperty(id);
+					System.out.println("Reading properties: " + id + " = " + value);
+					
+					if (id.equals("serverUrl")) {
+						serverUrl = value;
+					}
+				}
+			}catch(Exception e){
+				e.printStackTrace();
+			}
 			
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
