@@ -1,9 +1,15 @@
 package com.host.node;
 
+import java.io.ByteArrayOutputStream;
+
+import org.apache.commons.httpclient.util.TimeoutController;
+import org.apache.commons.httpclient.util.TimeoutController.TimeoutException;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import com.host.node.model.UserCommandDTO;
 import com.host.node.request.MainGetRequest;
+import com.host.node.request.MainPostRequest;
+import com.host.node.util.ConstantsUtil;
 
 public class ScanCommandThread extends Thread {
 	
@@ -26,25 +32,53 @@ public class ScanCommandThread extends Thread {
 				cmdRequest.setUrl("services/command/userCommandService/lastcommand/" + MainController.macAddress);
 				String cmdResponse = cmdRequest.execute();
 				 
-				System.out.println("cmdResponse: " + cmdResponse);
+				System.out.println("Get last command response: " + cmdResponse);
 				
 				if (cmdResponse != null && !cmdResponse.isEmpty()) {
-					// Create Process Command Tread
+					// 2. Transfer response to Command DTO
 					UserCommandDTO jsonObject = objectMapper.readValue(cmdResponse, UserCommandDTO.class);
 					
 					if (jsonObject.getId() != null) {
-						ProcessCommandThread thread = new ProcessCommandThread(jsonObject);
-						thread.start();
+						
+						// 3. Update command status to processing
+						jsonObject.setStatus("Processing");
+						MainPostRequest request = new MainPostRequest();
+						request.setUrl("services/command/userCommandService/create");
+						  
+						ByteArrayOutputStream bos = new ByteArrayOutputStream();
+						try {
+							objectMapper.writeValue(bos, jsonObject);
+						} catch (Exception e) {
+							System.out.println(e.getMessage());
+							e.printStackTrace();
+						}
+						String newCommandJson = bos.toString();						  
+						System.out.println("Update command status to processing: " + newCommandJson);
+						  
+						request.setPostDataJsonStr(newCommandJson);
+						String resultDataJsonStr = request.execute();
+						  
+						System.out.println("Update command status to processing returns: " + resultDataJsonStr);
+						
+						// 4. Process command
+						ProcessCommandThread task = new ProcessCommandThread(jsonObject);
+						TimeoutController.execute(task, ConstantsUtil.Default_Thread_Timeout);
 					}
-					
-					System.out.println("cmdStr: " + jsonObject.getCommandStr());
 				}
 			
-			
 				Thread.sleep(getRefreshRate());
+				
 			} catch (InterruptedException e) {
+				
+				System.out.println(e.getMessage());
+				e.printStackTrace();
+			} catch (TimeoutException e) {
+				
+				System.out.println(e.getMessage());
 				e.printStackTrace();
 			} catch (Exception e) {
+				
+				System.out.println(e.getMessage());
 				e.printStackTrace();
 			}
 		}

@@ -3,7 +3,6 @@ package com.host.node.request;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
 import com.host.node.MainController;
@@ -15,9 +14,9 @@ public class MainGetRequest {
 	private String resultDataJsonStr = "";
 	
 	public String execute() {
-		HttpClient client2 = new DefaultHttpClient();		
+		HttpClient client = MainHttpUtil.getDefaultHttpClient();        
 		HttpGet httpget = new HttpGet(MainController.serverUrl + url);
-
+		
 		try {			
 //			StringEntity inputEntity = new StringEntity(postDataJsonStr);
 //			inputEntity.setContentType("application/json");
@@ -25,7 +24,7 @@ public class MainGetRequest {
 //			
 //			System.out.println("inputEntity: " + postDataJsonStr);
 			
-			HttpResponse response = client2.execute(httpget);
+			HttpResponse response = client.execute(httpget);
 			resultDataJsonStr = EntityUtils.toString(response.getEntity(), "utf-8");
 			
 			System.out.println("JSON: " + resultDataJsonStr);

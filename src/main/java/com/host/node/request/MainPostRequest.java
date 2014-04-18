@@ -4,7 +4,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
 import com.host.node.MainController;
@@ -16,7 +15,7 @@ public class MainPostRequest {
 	private String resultDataJsonStr = "";
 	
 	public String execute() {
-		HttpClient client2 = new DefaultHttpClient();		
+		HttpClient client = MainHttpUtil.getDefaultHttpClient();		
 		HttpPost httpPost = new HttpPost(MainController.serverUrl + url);
 
 		try {			
@@ -26,7 +25,7 @@ public class MainPostRequest {
 			
 			System.out.println("inputEntity: " + postDataJsonStr);
 			
-			HttpResponse response = client2.execute(httpPost);
+			HttpResponse response = client.execute(httpPost);
 			resultDataJsonStr = EntityUtils.toString(response.getEntity(), "utf-8");
 			
 			System.out.println("JSON: " + resultDataJsonStr);

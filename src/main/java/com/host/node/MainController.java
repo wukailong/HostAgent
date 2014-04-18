@@ -34,7 +34,7 @@ public class MainController {
 			NetInterfaceConfig nic = sigar.getNetInterfaceConfig();	// get Default Mac Address
 			macAddress = nic.getHwaddr();		
 			
-			System.out.println("macAddress: " + macAddress);
+			System.out.println("MacAddress: " + macAddress);
 			
 			Properties p = new Properties();
 			FileInputStream ferr = new FileInputStream("properties.properties");// 用subString(6)去掉：file:/
@@ -68,22 +68,12 @@ public class MainController {
 		public void run() {
 			System.out.println("FileEncoding: " + System.getProperty("file.encoding")); 
 			System.out.println("SunJnuEncoding: " + System.getProperty("sun.jnu.encoding"));
-//			System.getProperties().list(System.out);
-			
 			System.out.println("------------------------------------------");
-			
-			
 			
 			Sigar sigar = new Sigar();
 			HostStatusInfoDTO status = new HostStatusInfoDTO();
-			
-//			UserCommandDTO dto = new UserCommandDTO();
-//			dto.setId(1l);			
 
 			  try { 
-
-				  System.out.println("CPUCount: " + sigar.getCpuInfoList().length); 
-				  
 				  CpuPerc firstCPU = sigar.getCpuPercList()[0];
 				  
 				  status.setCpuCount(sigar.getCpuInfoList().length);
@@ -95,28 +85,14 @@ public class MainController {
 				  status.setTotalMem(mem.getTotal());
 				  status.setFreeMem(mem.getFree());
 
-				  // 内存总量
-				  System.out.println("Total = " + mem.getTotal() / 1024L + "K av"); 
-				  // 当前内存使用量
-				  System.out.println("Used = " + mem.getUsed() / 1024L + "K used"); 
-				  // 当前内存剩余量
-				  System.out.println("Free = " + mem.getFree() / 1024L + "K free");
-				  
 				  String hostname = InetAddress.getLocalHost().getHostName();
 				  hostname = sigar.getNetInfo().getHostName(); 
-				  System.out.println("hostname: " + hostname);
 				  
 				  status.setHostname(hostname);
 				  status.setMacAddress(macAddress);
 			  
-				  
-//				  dto.setHostMacAddress(macAddress);
-//				  dto.setCommandStr("cmd /c tasklist");
-////				  dto.setCreationDate(new Date());
-//				  dto.setStatus("Created");
-
-			   
 			  } catch (Exception e) { 
+				  
 				  System.out.println(e.getMessage());
 				  e.printStackTrace();
 			  } finally {
@@ -134,69 +110,11 @@ public class MainController {
 					e.printStackTrace();
 			  }
 			  String statusJson = bos.toString();
-			  
-			  System.out.println("SendJson: " + statusJson);
+			  System.out.println("Send new status: " + statusJson);
 			  
 			  request.setPostDataJsonStr(statusJson);
-//			  request.setPostDataJsonStr(fromObject(status).toString());
-			  String resultDataJsonStr = request.execute();
-			  
-			  System.out.println("JSON: " + resultDataJsonStr);
-			  
-//			  // 2. Save New Command
-//			  MainPostRequest cmdRequest = new MainPostRequest();
-//			  cmdRequest.setUrl("services/command/userCommandService/create");
-//			  cmdRequest.setPostDataJsonStr(JSONObject.fromObject(dto).toString());
-//			  String cmdResponse = cmdRequest.execute();
-//			  
-//			  System.out.println("cmdResponse: " + cmdResponse);
-			  
-//			  // 3. Get Command By Id
-//			  MainGetRequest cmdRequest = new MainGetRequest();
-//			  cmdRequest.setUrl("services/command/userCommandService/getcommand/1");
-//			  String cmdResponse = cmdRequest.execute();
-//			  
-//			  System.out.println("cmdResponse: " + cmdResponse);
-			  
-//			  // 3. Get Last Command mac address
-//			  MainGetRequest cmdRequest = new MainGetRequest();
-//			  cmdRequest.setUrl("services/command/userCommandService/lastcommand/" + macAddress);
-//			  String cmdResponse = cmdRequest.execute();
-//			  
-//			  System.out.println("cmdResponse: " + cmdResponse);
-			  
-			  
-//			// 3. Get All Command mac address
-//			  MainGetRequest cmdRequest = new MainGetRequest();
-//			  cmdRequest.setUrl("services/command/userCommandService/allcommand/" + macAddress);
-//			  String cmdResponse = cmdRequest.execute();
-//			  
-//			  System.out.println("cmdResponse: " + cmdResponse);
-			  
-			  
-//			HttpClient client2 = new DefaultHttpClient();		
-//			HttpPost httpPost = new HttpPost("services/hostInfo/hostStatusInfoService/create");
-//
-//			try {
-//				
-//				StringEntity inputEntity = new StringEntity(JSONObject.fromObject(status).toString());
-//				inputEntity.setContentType("application/json");
-//				httpPost.setEntity(inputEntity);
-//				
-//				System.out.println("inputEntity: " + JSONObject.fromObject(status).toString());
-//				
-//				HttpResponse response = client2.execute(httpPost);
-//				String json = EntityUtils.toString(response.getEntity(), "utf-8");
-//				
-////				JSONObject obj = new JSONObject(json);
-////				
-////				JSONObject.toBean(jsonObject, beanClass);
-//				
-//				System.out.println("JSON: " + json);
-//			} catch (Exception e) {
-//				System.out.println(e.getMessage());
-//				e.printStackTrace();     
-//			}
+			  String resultDataJsonStr = request.execute();			  
+			  System.out.println("Send new status response: " + resultDataJsonStr);
 		}
 		
 	}
@@ -207,7 +125,7 @@ public class MainController {
 		Timer timer = new Timer();
 		timer.schedule(new RefreshHostInfoTask(), 1000, 5000);//在1秒后执行此任务,每次间隔5秒,如果传递一个Data参数,就可以在某个固定的时间执行这个任务.
 		
-		// TODO 2. Get Last Unfinished Command  (Scan)
+		// 2. Get Last Unfinished Command  (Scan)
 		ScanCommandThread scanThread = new ScanCommandThread();
 		scanThread.start();
 				
@@ -219,6 +137,7 @@ public class MainController {
 					scanThread.setContinue(false);
 				}
 			} catch (IOException e) {
+				System.out.println(e.getMessage());
 				e.printStackTrace();
 			}
 		}	
