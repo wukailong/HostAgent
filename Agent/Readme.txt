@@ -1,23 +1,6 @@
-Change /META-INF/MANIFEST.MF
+前提条件：
+启动环境需要Java 1.7运行环境, 如果没安装，可以从下面链接中下载对应版本进行安装：
+http://www.oracle.com/technetwork/java/javase/downloads/java-archive-downloads-javase7-521261.html
 
-Manifest-Version: 1.0
-Archiver-Version: Plexus Archiver
-Created-By: Apache Maven
-Built-By: wukailong
-Build-Jdk: 1.7.0_45
-Class-Path: lib/commons-codec-1.4.jar
-Main-Class: com.scis.licensemanager.LicenseGenerator
-
-
-Class-Path: lib/commons-codec-1.1.jar lib/commons-httpclient-3.0.1.jar lib/httpclient-4.2.1.jar lib/jackson-jaxrs-1.9.0.jar lib/sigar-1.6.4.jar lib/jackson-mapper-asl-1.9.0.jar lib/jackson-core-asl-1.9.0.jar lib/httpcore-4.2.1.jar lib/commons-logging-1.1.1.jar
-Main-Class: com.host.node.MainController
-
-
-
-java -jar -Djava.library.path=.\libdll HostAgent-1.jar
-
-
-
-如果有多个jar包需要引用的情况：
-
-Class-Path: lib/some.jar lib/some2.jar
+启动程序：
+解压缩程序后，点击startup.bat运行即可。
